@@ -1,5 +1,14 @@
 const TEXTS = {
   lv: {
+    
+    parent_index: {
+      title: "Vecāku aptauja",
+      text: "Paldies, ka veltāt laiku. Aptauja ir anonīma un aizņem apmēram 3–5 minūtes.",
+      language: "Izvēlieties valodu",
+      branch: "Izvēlieties filiāli",
+      start: "Sākt anketu"
+    },
+
     common: {
       next: "Tālāk",
       thank_you: "Paldies par aizpildīšanu!"

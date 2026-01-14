@@ -1,0 +1,320 @@
+/* ===============================
+   Fonts
+=============================== */
+
+@font-face {
+  font-family: 'GeorgiaCustom';
+  src: url('fonts/georgia.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Montserrat Alternates';
+  src: url('fonts/MontserratAlternates-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* ===============================
+   Base reset
+=============================== */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+
+  background: #f6f2ea;
+  color: #2f4037;
+
+  font-family: 'GeorgiaCustom', Georgia, serif;
+  font-size: 16px;
+  line-height: 1.55;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* ===============================
+   Typography
+=============================== */
+
+h1,
+h2,
+h3,
+.primary-btn,
+#nextBtn,
+.skip-btn,
+.option-group button {
+  font-family: 'Montserrat Alternates', Arial, sans-serif;
+}
+
+h1 {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 1.25rem;
+  color: #2f4037;
+}
+
+p {
+  margin: 0 0 1rem;
+}
+
+/* ===============================
+   App container
+=============================== */
+
+.app {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ===============================
+   Card (same as children, calmer)
+=============================== */
+
+.card {
+  display: flex;
+  flex-direction: column;
+
+  background: #f1e8d2;
+  border-radius: 40px;
+  padding: 2.25rem 2rem;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* ===============================
+   Logo
+=============================== */
+
+.logo-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.logo {
+  max-width: 110px;
+  width: 100%;
+  height: auto;
+}
+
+/* ===============================
+   Intro / description text
+=============================== */
+
+.intro-text,
+.description-text {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #2f4037;
+  margin-bottom: 1.75rem;
+}
+
+/* ===============================
+   Sections (language, branch, etc.)
+=============================== */
+
+.section {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5f726b;
+  margin-bottom: 0.5rem;
+}
+
+/* ===============================
+   Option group (BIG buttons)
+   — language / branch / start
+=============================== */
+
+.option-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.option-group button {
+  width: 100%;
+
+  background-color: #f1e8d2;
+  border: 2px solid #e0a716;
+  border-radius: 999px;
+
+  padding: 0.8rem 1.2rem;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #2f4037;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.option-group button:hover:not(.selected) {
+  background-color: #ede4cf;
+}
+
+.option-group button.selected {
+  background-color: #e0a716;
+  color: #ffffff;
+
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+/* ===============================
+   Primary button (Start / Next)
+=============================== */
+
+.primary-btn,
+#startSurvey,
+#nextBtn {
+  background-color: #e0a716;
+  border: none;
+  border-radius: 10px;
+
+  padding: 0.65rem 1.2rem;
+
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+
+  cursor: pointer;
+
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+
+  transition:
+    background-color 0.25s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.primary-btn:hover:not(:disabled),
+#nextBtn:hover:not(:disabled) {
+  background-color: #d29500;
+  transform: translateY(-1px);
+  box-shadow:
+    0 6px 12px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.primary-btn:disabled,
+#nextBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ===============================
+   Skip button
+=============================== */
+
+.skip-btn {
+  margin-top: 1.25rem;
+
+  background: none;
+  border: none;
+
+  font-size: 14px;
+  color: #6b7c73;
+
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.8;
+
+  transition: opacity 0.2s ease;
+}
+
+.skip-btn:hover {
+  opacity: 1;
+}
+
+/* ===============================
+   Survey answers (radio-like)
+=============================== */
+
+.answers {
+  margin-top: 1rem;
+}
+
+.answer-btn {
+  width: 100%;
+  text-align: left;
+
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+
+  background: #f3f6ef;
+  border: 2px solid transparent;
+  border-radius: 14px;
+
+  font-size: 15px;
+  color: #2f4037;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.answer-btn:hover {
+  background: #eef2eb;
+}
+
+.answer-btn.selected {
+  border-color: #e0a716;
+  background: #eef5f0;
+}
+
+/* ===============================
+   Navigation
+=============================== */
+
+.nav {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+/* ===============================
+   Mobile tweaks
+=============================== */
+
+@media (max-width: 420px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  .intro-text,
+  .description-text {
+    font-size: 14px;
+  }
+
+  .option-group button {
+    font-size: 15px;
+  }
+}
