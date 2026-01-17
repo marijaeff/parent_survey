@@ -20,28 +20,30 @@
 
       <h1 id="title"></h1>
 
-      <p class="intro-text" id="introText"></p>
-
-      <!-- language -->
+      <!-- LANGUAGE -->
       <div class="section">
-        <p class="section-title" id="langTitle"></p>
         <div class="option-group small" id="languageOptions">
           <button data-lang="lv">LV</button>
-          <button data-lang="ru">RU</button>
-          <button data-lang="en">EN</button>
+          <button data-lang="ru" disabled>RU</button>
+          <button data-lang="en" disabled>EN</button>
         </div>
       </div>
 
-      <!-- branch -->
-      <div class="section">
-        <p class="section-title" id="branchTitle"></p>
-        <div class="option-group small" id="branchOptions">
-          <button data-branch="riga">Rīga</button>
-          <button data-branch="liepaja">Liepāja</button>
-        </div>
-      </div>
+      <!-- AFTER LANGUAGE -->
+      <div id="afterLanguage" style="display: none;">
 
-      <button id="startBtn" class="primary-btn" disabled></button>
+        <p class="intro-text" id="introText"></p>
+
+        <div class="section">
+          <div class="option-group small" id="branchOptions">
+            <button data-branch="riga">Rīga</button>
+            <button data-branch="liepaja" disabled>Liepāja</button>
+          </div>
+        </div>
+
+        <button id="startBtn" class="primary-btn" disabled></button>
+
+      </div>
 
     </div>
   </div>
@@ -52,58 +54,47 @@
     let selectedLanguage = null;
     let selectedBranch = null;
 
+    const afterLanguage = document.getElementById("afterLanguage");
+    const title = document.getElementById("title");
+    const introText = document.getElementById("introText");
+    const startBtn = document.getElementById("startBtn");
+
     function updateStartButton() {
-      document.getElementById("startBtn").disabled = !(selectedLanguage && selectedBranch);
-    }
-// option btn
-    function setupOptionGroup(containerId, storageKey) {
-      const container = document.getElementById(containerId);
-      const buttons = container.querySelectorAll("button");
-
-      buttons.forEach(btn => {
-        btn.addEventListener("click", () => {
-          buttons.forEach(b => b.classList.remove("selected"));
-          btn.classList.add("selected");
-
-          sessionStorage.setItem(storageKey, btn.dataset.lang || btn.dataset.branch);
-        });
-      });
+      startBtn.disabled = !(selectedLanguage && selectedBranch);
     }
 
-    setupOptionGroup("languageOptions", "language");
-    setupOptionGroup("branchOptions", "branch");
-
-    // texts
     function applyTexts(lang) {
       const t = TEXTS[lang]?.parent_index || TEXTS.lv.parent_index;
 
-      document.getElementById("title").textContent = t.title;
-      document.getElementById("introText").textContent = t.text;
-      document.getElementById("langTitle").textContent = t.language;
-      document.getElementById("branchTitle").textContent = t.branch;
-      document.getElementById("startBtn").textContent = t.start;
+      title.textContent = t.title;
+      introText.textContent = t.intro;
+      startBtn.textContent = t.start_button;
     }
 
-    applyTexts("lv");
-
-    // language buttons
+    // LANGUAGE
     document.querySelectorAll("#languageOptions button").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll("#languageOptions button").forEach(b => b.classList.remove("selected"));
+        document.querySelectorAll("#languageOptions button")
+          .forEach(b => b.classList.remove("selected"));
+
         btn.classList.add("selected");
 
         selectedLanguage = btn.dataset.lang;
         sessionStorage.setItem("language", selectedLanguage);
 
         applyTexts(selectedLanguage);
+        afterLanguage.style.display = "block";
+
         updateStartButton();
       });
     });
 
-    // branch buttons
+    // BRANCH
     document.querySelectorAll("#branchOptions button").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll("#branchOptions button").forEach(b => b.classList.remove("selected"));
+        document.querySelectorAll("#branchOptions button")
+          .forEach(b => b.classList.remove("selected"));
+
         btn.classList.add("selected");
 
         selectedBranch = btn.dataset.branch;
@@ -113,12 +104,11 @@
       });
     });
 
-    // start
-    document.getElementById("startBtn").addEventListener("click", () => {
+    // START
+    startBtn.addEventListener("click", () => {
       window.location.href = "survey.html";
     });
   </script>
 
 </body>
-
 </html>

@@ -4,24 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Vecāku anketa</title>
-  <link rel="stylesheet" href="parent-survey.css" />
+
+  <link rel="stylesheet" href="survey.css" />
 </head>
 
-<body>
-  <div class="app parent-mode">
+<body class="is-page-entering">
 
-    <div class="card">
-      <h1 id="questionTitle"></h1>
+   <div class="app parent-mode">
 
-      <div class="answers" id="answers"></div>
-
-      <div class="nav">
-        <button id="nextBtn" disabled>Tālāk</button>
-      </div>
-    </div>
-
+  <div class="card wide-card">
+    <h1 id="questionTitle"></h1>
+    <div class="answers" id="answers"></div>
   </div>
 
-  <script src="parent-survey.js"></script>
+  <div class="actions">
+    <button id="nextBtn" class="primary-btn" disabled></button>
+    <button id="skipBtn" class="skip-btn"></button>
+  </div>
+
+</div>
+
+  <script src="texts.js"></script>
+  <script src="survey.js"></script>
 </body>
 </html>
