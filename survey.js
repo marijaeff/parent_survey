@@ -165,7 +165,13 @@ function renderOptions(key, q) {
           .forEach(b => b.classList.remove("selected"));
 
         btn.classList.add("selected");
-        selectSingle(key, value);
+
+        if (value === "other") {
+          answers[key] = null;
+        } else {
+          selectSingle(key, value);
+        }
+
 
         const existingInput = answersEl.querySelector(".other-input");
         if (existingInput) existingInput.remove();
@@ -247,9 +253,18 @@ function renderScale(key, q) {
       qb.addEventListener("click", () => {
         const targetBtn = buttons[opt.value - 1];
 
+        isUserScrolling = false;
+        isProgrammaticScroll = true;
+
+        setActive(targetBtn, false);
+
         centerButton(targetBtn);
-        setActive(targetBtn, true);
+
+        setTimeout(() => {
+          isProgrammaticScroll = false;
+        }, 300);
       });
+
 
       quickButtons.push({ btn: qb, value: opt.value });
       quickWrap.appendChild(qb);
@@ -439,7 +454,7 @@ function renderOtherInput(key, placeholder, isMulti = false) {
   if (isMulti) {
     input.value = answers[key + "_other"] || "";
   } else {
-    input.value = typeof answers[key] === "string" ? answers[key] : "";
+    input.value = "";
   }
 
   input.addEventListener("input", () => {
@@ -490,6 +505,19 @@ function saveAnswers() {
 }
 
 function goNext(isSkip = false) {
+  if (!isSkip && currentKey) {
+    const q = texts.questions[currentKey];
+
+    if (
+      q?.type === "single" &&
+      answers[currentKey] === null &&
+      q.options?.other
+    ) {
+      answers[currentKey] = "other";
+      saveAnswers();
+    }
+  }
+
   if (currentIndex >= QUESTION_ORDER.length - 1) {
     finishSurvey();
     return;
