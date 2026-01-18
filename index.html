@@ -24,8 +24,8 @@
       <div class="section">
         <div class="option-group small" id="languageOptions">
           <button data-lang="lv">LV</button>
-          <button data-lang="ru" disabled>RU</button>
-          <button data-lang="en" disabled>EN</button>
+          <button data-lang="ru">RU</button>
+          <button data-lang="en">EN</button>
         </div>
       </div>
 
@@ -37,7 +37,7 @@
         <div class="section">
           <div class="option-group small" id="branchOptions">
             <button data-branch="riga">Rīga</button>
-            <button data-branch="liepaja" disabled>Liepāja</button>
+            <button data-branch="liepaja">Liepāja</button>
           </div>
         </div>
 
@@ -51,64 +51,111 @@
   <script src="texts.js"></script>
 
   <script>
-    let selectedLanguage = null;
-    let selectedBranch = null;
+    let selectedLanguage = sessionStorage.getItem("language") || null;
+    let selectedBranch = sessionStorage.getItem("branch") || null;
 
     const afterLanguage = document.getElementById("afterLanguage");
     const title = document.getElementById("title");
     const introText = document.getElementById("introText");
     const startBtn = document.getElementById("startBtn");
-
+    document
+      .querySelectorAll(".branch-soon-hint")
+      .forEach(h => h.remove());
     function updateStartButton() {
       startBtn.disabled = !(selectedLanguage && selectedBranch);
     }
+    const liepajaBtn = document.querySelector(
+      '#branchOptions button[data-branch="liepaja"]'
+    );
+
+    if (liepajaBtn) {
+      liepajaBtn.classList.add("is-disabled");
+    }
 
     function applyTexts(lang) {
-      const t = TEXTS[lang]?.parent_index || TEXTS.lv.parent_index;
+      const t = (TEXTS[lang] && TEXTS[lang].parent_index) ? TEXTS[lang].parent_index : TEXTS.lv.parent_index;
+
+      document.documentElement.lang = lang;
 
       title.textContent = t.title;
       introText.textContent = t.intro;
       startBtn.textContent = t.start_button;
     }
 
+    function setSelected(groupSelector, attr, value) {
+      document.querySelectorAll(groupSelector + " button").forEach(b => {
+        b.classList.toggle("selected", b.dataset[attr] === value);
+      });
+    }
+
     // LANGUAGE
     document.querySelectorAll("#languageOptions button").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll("#languageOptions button")
-          .forEach(b => b.classList.remove("selected"));
-
-        btn.classList.add("selected");
-
         selectedLanguage = btn.dataset.lang;
         sessionStorage.setItem("language", selectedLanguage);
 
+        setSelected("#languageOptions", "lang", selectedLanguage);
         applyTexts(selectedLanguage);
-        afterLanguage.style.display = "block";
 
+        afterLanguage.style.display = "block";
         updateStartButton();
+
+        const existingHint = document.querySelector(".branch-soon-hint");
+        if (existingHint) {
+          existingHint.textContent = TEXTS[selectedLanguage].common.coming_soon;
+        }
+
       });
     });
 
     // BRANCH
+
     document.querySelectorAll("#branchOptions button").forEach(btn => {
       btn.addEventListener("click", () => {
-        document.querySelectorAll("#branchOptions button")
-          .forEach(b => b.classList.remove("selected"));
+        const branch = btn.dataset.branch;
 
-        btn.classList.add("selected");
 
-        selectedBranch = btn.dataset.branch;
+        document
+          .querySelectorAll(".branch-soon-hint")
+          .forEach(h => h.remove());
+
+
+        if (branch === "liepaja") {
+          const lang = selectedLanguage || "lv";
+
+
+          selectedBranch = null;
+          sessionStorage.removeItem("branch");
+
+
+          setSelected("#branchOptions", "branch", null);
+
+          updateStartButton();
+
+          const hint = document.createElement("div");
+          hint.className = "branch-soon-hint";
+          hint.textContent = TEXTS[lang].common.coming_soon;
+
+          btn.appendChild(hint);
+          return;
+        }
+
+        selectedBranch = branch;
         sessionStorage.setItem("branch", selectedBranch);
 
+        setSelected("#branchOptions", "branch", selectedBranch);
         updateStartButton();
       });
     });
 
-    // START
     startBtn.addEventListener("click", () => {
+      if (!selectedLanguage || !selectedBranch) return;
       window.location.href = "survey.html";
     });
+
   </script>
 
+
 </body>
+
 </html>

@@ -3,6 +3,7 @@
 ========================= */
 
 const language = sessionStorage.getItem("language") || "lv";
+document.documentElement.lang = language;
 const texts = TEXTS[language];
 const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
 let currentKey = null;
@@ -138,16 +139,19 @@ function renderOptions(key, q) {
     btn.addEventListener("click", () => {
 
       if (isMulti) {
-        const fieldKey = `process_${value}`;
         const isSelected = btn.classList.toggle("selected");
 
-        answers[fieldKey] = isSelected;
+        if (value !== "other") {
+          const fieldKey = `process_${value}`;
+          answers[fieldKey] = isSelected;
+        }
+
 
         if (value === "other" && q.other_placeholder) {
           const existingInput = answersEl.querySelector(".other-input");
 
           if (isSelected && !existingInput) {
-            renderOtherInput(key, q.other_placeholder);
+            renderOtherInput("process", q.other_placeholder, true);
           }
 
           if (!isSelected && existingInput) {
@@ -423,7 +427,7 @@ function selectSingle(key, value) {
 }
 
 
-function renderOtherInput(key, placeholder) {
+function renderOtherInput(key, placeholder, isMulti = false) {
   const existing = answersEl.querySelector(".other-input");
   if (existing) return;
 
@@ -431,15 +435,25 @@ function renderOtherInput(key, placeholder) {
   input.type = "text";
   input.className = "other-input";
   input.placeholder = placeholder;
-  input.value = answers[key + "_other"] || "";
+
+  if (isMulti) {
+    input.value = answers[key + "_other"] || "";
+  } else {
+    input.value = typeof answers[key] === "string" ? answers[key] : "";
+  }
 
   input.addEventListener("input", () => {
-    answers[key + "_other"] = input.value;
+    if (isMulti) {
+      answers[key + "_other"] = input.value;
+    } else {
+      answers[key] = input.value;
+    }
     saveAnswers();
   });
 
   answersEl.appendChild(input);
 }
+
 
 function renderThankYou() {
   titleEl.textContent = "",
@@ -527,7 +541,7 @@ function shouldShowQuestion(key) {
 
 function finishSurvey() {
   nextBtn.disabled = true;
-  nextBtn.textContent = "Nosūtam…";
+  nextBtn.textContent = texts.common.sending;;
   skipBtn.style.display = "none";
   const payload = {
     ...answers,

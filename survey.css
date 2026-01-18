@@ -483,6 +483,49 @@ p {
   box-shadow: 0 0 0 3px rgba(224, 167, 22, 0.15);
 }
 
+.branch-options {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.branch-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  width: 100%;
+}
+
+#branchOptions button {
+  position: relative;
+}
+
+.branch-soon-hint {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 4px;
+
+  font-size: 12px;
+  color: #888;
+  white-space: nowrap;
+}
+
+
+#branchOptions button.is-disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: auto;
+}
+
+#branchOptions button.is-disabled:hover {
+  background: inherit;
+}
+
+
+
 /* "Cits" input — styled like compact comment */
 .answers .other-input {
   width: 100%;
