@@ -1,9 +1,6 @@
 const TEXTS = {
   lv: {
 
-    /* =====================
-       STARTA LAPA (index)
-    ====================== */
     parent_index: {
       title: "Vecāku anketa",
       intro:
@@ -13,9 +10,6 @@ const TEXTS = {
       start_button: "Sākt anketu"
     },
 
-    /* =====================
-       KOPĪGIE TEKSTI
-    ====================== */
     common: {
       next: "Tālāk",
       skip: "Izlaist",
@@ -23,12 +17,11 @@ const TEXTS = {
       no: "Nē",
       thank_you_title: "Paldies!",
       thank_you_text:
-        "Jūsu atbildes ir saņemtas. Tās palīdz mums veidot drošāku un atbalstošāku vidi bērniem un ģimenēm."
+        "Jūsu atbildes ir saņemtas. Tās palīdz mums veidot drošāku un atbalstošāku vidi bērniem un ģimenēm.",
+      scale_hint: "Ja vēlaties, varat precizēt atbildi, pavelkot skalu",
+      scale_arrows: "← pavelciet →",
     },
 
-    /* =====================
-       JAUTĀJUMI
-    ====================== */
     questions: {
 
       relation_to_child: {
@@ -41,7 +34,7 @@ const TEXTS = {
           foster_parent: "Audžuvecāks",
           orphan_court: "Bāriņtiesa",
           institution_worker:
-            "Institūcijas darbinieks (audzinātājs, sociālais darbinieks u. c.)",
+            "Institūcijas darbinieks",
           other: "Cits"
         },
         other_placeholder: "Lūdzu, norādiet precīzāk"
@@ -76,7 +69,15 @@ const TEXTS = {
         scale: {
           min: "Ļoti slikti",
           max: "Ļoti labi"
-        }
+        },
+
+        quick_options: [
+          { label: "Ļoti slikti", value: 1 },
+          { label: "Drīzāk slikti", value: 3 },
+          { label: "Neitrāli", value: 5 },
+          { label: "Drīzāk labi", value: 8 },
+          { label: "Ļoti labi", value: 10 }
+        ]
       },
 
       environment_child_friendly: {
@@ -85,7 +86,15 @@ const TEXTS = {
         scale: {
           min: "Nemaz nav draudzīga",
           max: "Ļoti draudzīga"
-        }
+        },
+
+        quick_options: [
+          { label: "Nemaz nav draudzīga", value: 1 },
+          { label: "Drīzāk nedraudzīga", value: 3 },
+          { label: "Vidēji draudzīga", value: 5 },
+          { label: "Drīzāk draudzīga", value: 8 },
+          { label: "Ļoti draudzīga", value: 10 }
+        ]
       },
 
       rooms_overall: {
@@ -94,7 +103,16 @@ const TEXTS = {
         scale: {
           min: "Nedraudzīgas / neatbilstošas",
           max: "Ļoti piemērotas un draudzīgas"
-        }
+        },
+
+        quick_options: [
+          { label: "Nedraudzīgas", value: 1 },
+          { label: "Drīzāk neatbilstošas", value: 3 },
+          { label: "Vidējas", value: 5 },
+          { label: "Drīzāk piemērotas", value: 8 },
+          { label: "Ļoti piemērotas", value: 10 }
+        ]
+
       },
 
       felt_safe: {
@@ -102,7 +120,16 @@ const TEXTS = {
         scale: {
           min: "Ļoti nedroši",
           max: "Pilnīgi droši"
-        }
+        },
+
+        quick_options: [
+          { label: "Ļoti nedroši", value: 1 },
+          { label: "Drīzāk nedroši", value: 3 },
+          { label: "Neitrāli", value: 5 },
+          { label: "Drīzāk droši", value: 8 },
+          { label: "Pilnīgi droši", value: 10 }
+        ]
+
       },
 
       understood_process: {
@@ -111,7 +138,15 @@ const TEXTS = {
         scale: {
           min: "Nebija pietiekama un saprotama",
           max: "Pilnībā pietiekama un saprotama"
-        }
+        },
+        quick_options: [
+          { label: "Nebija saprotama", value: 1 },
+          { label: "Drīzāk nesaprotama", value: 3 },
+          { label: "Daļēji saprotama", value: 5 },
+          { label: "Drīzāk saprotama", value: 8 },
+          { label: "Pilnīgi saprotama", value: 10 }
+        ]
+
       },
 
       staff_attitude: {
@@ -119,7 +154,15 @@ const TEXTS = {
         scale: {
           min: "Nepietiekami iejūtīga",
           max: "Ļoti iejūtīga un cieņpilna"
-        }
+        },
+        quick_options: [
+          { label: "Nepietiekami iejūtīga", value: 1 },
+          { label: "Drīzāk neiejūtīga", value: 3 },
+          { label: "Neitrāla", value: 5 },
+          { label: "Drīzāk iejūtīga", value: 8 },
+          { label: "Ļoti iejūtīga", value: 10 }
+        ]
+
       },
 
       participated_in_interview: {
@@ -132,7 +175,15 @@ const TEXTS = {
         scale: {
           min: "Ļoti nesaudzīga",
           max: "Ļoti saudzīga"
-        }
+        },
+        quick_options: [
+          { label: "Ļoti nesaudzīga", value: 1 },
+          { label: "Drīzāk nesaudzīga", value: 3 },
+          { label: "Vidēji saudzīga", value: 5 },
+          { label: "Drīzāk saudzīga", value: 8 },
+          { label: "Ļoti saudzīga", value: 10 }
+        ]
+
       },
 
       general_comment: {
@@ -141,7 +192,7 @@ const TEXTS = {
         placeholder: "Jūsu komentārs (pēc izvēles)"
       }
 
-      
+
     }
   }
 };

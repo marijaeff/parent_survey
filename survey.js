@@ -51,7 +51,7 @@ nextBtn.addEventListener("click", () => {
 });
 
 skipBtn.addEventListener("click", () => {
-  goNext();
+  goNext(true);
 });
 
 /* =========================
@@ -59,15 +59,28 @@ skipBtn.addEventListener("click", () => {
 ========================= */
 
 function renderCurrentQuestion() {
-  const key = QUESTION_ORDER[currentIndex];
+  if (currentIndex >= QUESTION_ORDER.length) {
+    finishSurvey();
+    return;
+  }
 
-  if (!shouldShowQuestion(key)) {
-    goNext();
+  let key = QUESTION_ORDER[currentIndex];
+
+  while (key && !shouldShowQuestion(key)) {
+    currentIndex++;
+    key = QUESTION_ORDER[currentIndex];
+  }
+
+  if (!key) {
+    finishSurvey();
     return;
   }
 
   const q = texts.questions[key];
-  if (!q) return;
+  if (!q) {
+    finishSurvey();
+    return;
+  }
 
   titleEl.textContent = q.text;
   answersEl.innerHTML = "";
@@ -84,6 +97,7 @@ function renderCurrentQuestion() {
     nextBtn.disabled = false;
   }
 }
+
 
 // renderē atbilžu pogas (viena vai vairākas)
 
@@ -145,7 +159,9 @@ function renderOptions(key, q) {
 
 
 function renderScale(key, q) {
+  let updateQuickButtons = () => { };
   let isUserScrolling = false;
+  let isProgrammaticScroll = false;
   let scrollEndTimeout = null;
   const wrapper = document.createElement("div");
   wrapper.className = "scale-wrapper";
@@ -189,9 +205,67 @@ function renderScale(key, q) {
   spacerRight.className = "scale-spacer";
   scroll.appendChild(spacerRight);
 
+  // === QUICK BUTTONS (1 · 3 · 5 · 8 · 10) ===
+  let quickButtons = [];
 
-  wrapper.appendChild(labels);
+  if (q.quick_options) {
+    const quickWrap = document.createElement("div");
+    quickWrap.className = "scale-quick";
+
+    q.quick_options.forEach(opt => {
+      const qb = document.createElement("button");
+      qb.className = "scale-quick-btn";
+      qb.textContent = opt.label;
+      qb.dataset.value = opt.value;
+
+      qb.addEventListener("click", () => {
+        const targetBtn = buttons[opt.value - 1];
+
+        centerButton(targetBtn);
+        setActive(targetBtn, true);
+      });
+
+      quickButtons.push({ btn: qb, value: opt.value });
+      quickWrap.appendChild(qb);
+    });
+
+    updateQuickButtons = function (value) {
+      quickButtons.forEach(item => {
+        let isActive = false;
+
+        if (item.value === 1) {
+          isActive = value <= 2;
+        } else if (item.value === 3) {
+          isActive = value >= 3 && value <= 4;
+        } else if (item.value === 5) {
+          isActive = value >= 5 && value <= 6;
+        } else if (item.value === 8) {
+          isActive = value >= 7 && value <= 8;
+        } else if (item.value === 10) {
+          isActive = value >= 9;
+        }
+
+        item.btn.classList.toggle("is-active", isActive);
+      });
+    };
+
+
+    wrapper.appendChild(quickWrap);
+  }
+
+  const hint = document.createElement("div");
+  hint.className = "scale-hint";
+  hint.textContent = texts.common.scale_hint;
+  wrapper.appendChild(hint);
+
+  const arrows = document.createElement("div");
+  arrows.className = "scale-arrows";
+  arrows.textContent = texts.common.scale_arrows;
+  wrapper.appendChild(arrows);
+
   wrapper.appendChild(scroll);
+  wrapper.appendChild(labels);
+
   answersEl.appendChild(wrapper);
 
   // === INITIAL STATE ===
@@ -207,6 +281,7 @@ function renderScale(key, q) {
   // === SCROLL LISTENER (mobile only) ===
   let scrollTimeout = null;
   scroll.addEventListener("scroll", () => {
+    if (isProgrammaticScroll) return;
     if (!isScrollable(scroll)) return;
 
     isUserScrolling = true;
@@ -251,8 +326,9 @@ function renderScale(key, q) {
 
     const value = Number(btn.dataset.value);
     selectSingle(key + "_score", value);
-    nextBtn.disabled = false;
 
+    nextBtn.disabled = false;
+    updateQuickButtons(value);
     if (shouldCenter && !isUserScrolling) {
       centerButton(btn);
     }
@@ -266,10 +342,16 @@ function renderScale(key, q) {
       scroll.offsetWidth / 2 +
       btn.offsetWidth / 2;
 
+    isProgrammaticScroll = true;
+
     scroll.scrollTo({
       left: scrollCenter,
       behavior: "smooth"
     });
+
+    setTimeout(() => {
+      isProgrammaticScroll = false;
+    }, 250);
   }
 
   function isScrollable(el) {
@@ -371,14 +453,35 @@ function saveAnswers() {
   sessionStorage.setItem("answers", JSON.stringify(answers));
 }
 
-function goNext() {
-  currentIndex++;
-  if (currentIndex < QUESTION_ORDER.length) {
-    renderCurrentQuestion();
-  } else {
+function goNext(isSkip = false) {
+  if (currentIndex >= QUESTION_ORDER.length - 1) {
     finishSurvey();
+    return;
   }
+
+  if (nextBtn.disabled && !isSkip) return;
+
+  const app = document.querySelector(".app");
+
+  app.classList.add("is-transitioning");
+
+  setTimeout(() => {
+    currentIndex++;
+    renderCurrentQuestion();
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+
+    requestAnimationFrame(() => {
+      app.classList.remove("is-transitioning");
+    });
+  }, 220);
 }
+
+
+
 
 /* =========================
    CONDITIONAL LOGIC
@@ -401,7 +504,29 @@ function shouldShowQuestion(key) {
 ========================= */
 
 function finishSurvey() {
-  console.log("DONE", answers);
-  renderThankYou();
-  // šeit būs nosūtīšana uz serveri un/vai pabeigšanas ekrāns
+  nextBtn.disabled = true;
+  nextBtn.textContent = "Nosūtam…";
+  skipBtn.style.display = "none";
+  const payload = {
+    ...answers,
+    language,
+    branch: sessionStorage.getItem("branch") || null,
+    form_type: "parent"
+  };
+
+  fetch("https://script.google.com/macros/s/AKfycbxlRSb_qLXVmyyJP61DcTMVK6OqA4jppjsi0YrRpL2hCc3AgjiK2ZfZ8T2OdPFZMzOu/exec", {
+    method: "POST",
+    mode: "no-cors",
+    body: JSON.stringify(payload)
+  })
+    .then(() => {
+      renderThankYou();
+      sessionStorage.clear();
+    })
+    .catch(() => {
+      renderThankYou();
+      sessionStorage.clear();
+    });
 }
+
+
