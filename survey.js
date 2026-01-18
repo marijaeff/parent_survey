@@ -192,9 +192,9 @@ function renderOptions(key, q) {
 
 function renderScale(key, q) {
   let updateQuickButtons = () => { };
-  let isUserScrolling = false;
   let isProgrammaticScroll = false;
-  let scrollEndTimeout = null;
+  let programmaticEndTimer = null;
+
   const wrapper = document.createElement("div");
   wrapper.className = "scale-wrapper";
 
@@ -226,7 +226,7 @@ function renderScale(key, q) {
     btn.dataset.value = i;
 
     btn.addEventListener("click", () => {
-      setActive(btn, true);
+      setActive(btn);
     });
 
     buttons.push(btn);
@@ -237,8 +237,8 @@ function renderScale(key, q) {
   spacerRight.className = "scale-spacer";
   scroll.appendChild(spacerRight);
 
-  // === QUICK BUTTONS (1 · 3 · 5 · 8 · 10) ===
-  let quickButtons = [];
+  // === QUICK BUTTONS ===
+  const quickButtons = [];
 
   if (q.quick_options) {
     const quickWrap = document.createElement("div");
@@ -248,32 +248,18 @@ function renderScale(key, q) {
       const qb = document.createElement("button");
       qb.className = "scale-quick-btn";
       qb.textContent = opt.label;
-      qb.dataset.value = opt.value;
 
       qb.addEventListener("click", () => {
         const targetBtn = buttons[opt.value - 1];
-
-        isUserScrolling = false;
         isProgrammaticScroll = true;
-
-        scroll.classList.add("no-anim");
-
-        setActive(targetBtn, false);
         centerButton(targetBtn);
-
-        setTimeout(() => {
-          scroll.classList.remove("no-anim");
-          isProgrammaticScroll = false;
-        }, 300);
       });
-
-
 
       quickButtons.push({ btn: qb, value: opt.value });
       quickWrap.appendChild(qb);
     });
 
-    updateQuickButtons = function (value) {
+    updateQuickButtons = value => {
       quickButtons.forEach(item => {
         let isActive = false;
 
@@ -294,27 +280,26 @@ function renderScale(key, q) {
     };
 
 
+
     wrapper.appendChild(quickWrap);
   }
 
   const hint = document.createElement("div");
   hint.className = "scale-hint";
   hint.textContent = texts.common.scale_hint;
-  wrapper.appendChild(hint);
 
   const arrows = document.createElement("div");
   arrows.className = "scale-arrows";
   arrows.textContent = texts.common.scale_arrows;
-  wrapper.appendChild(arrows);
 
+  wrapper.appendChild(hint);
+  wrapper.appendChild(arrows);
   wrapper.appendChild(scroll);
   wrapper.appendChild(labels);
-
   answersEl.appendChild(wrapper);
 
   // === INITIAL STATE ===
-  const saved = answers[key + "_score"];
-  const startValue = saved || 5;
+  const startValue = answers[key + "_score"] || 5;
   const startBtn = buttons[startValue - 1];
 
   requestAnimationFrame(() => {
@@ -322,15 +307,19 @@ function renderScale(key, q) {
     setActive(startBtn);
   });
 
-  // === SCROLL LISTENER (mobile only) ===
-  let scrollTimeout = null;
+  // === SCROLL HANDLING ===
   scroll.addEventListener("scroll", () => {
-    if (isProgrammaticScroll) return;
     if (!isScrollable(scroll)) return;
 
-    isUserScrolling = true;
-    clearTimeout(scrollEndTimeout);
+    clearTimeout(programmaticEndTimer);
 
+    programmaticEndTimer = setTimeout(() => {
+      isProgrammaticScroll = false;
+      pickClosest();
+    }, 140);
+  });
+
+  function pickClosest() {
     const paddingLeft = parseFloat(getComputedStyle(scroll).paddingLeft);
     const paddingRight = parseFloat(getComputedStyle(scroll).paddingRight);
 
@@ -344,66 +333,45 @@ function renderScale(key, q) {
     let closestDist = Infinity;
 
     buttons.forEach(btn => {
-      const btnCenter =
-        btn.offsetLeft + btn.offsetWidth / 2;
+      const btnCenter = btn.offsetLeft + btn.offsetWidth / 2;
       const dist = Math.abs(centerX - btnCenter);
-
       if (dist < closestDist) {
         closestDist = dist;
         closestBtn = btn;
       }
     });
 
-    if (closestBtn) {
-      setActive(closestBtn, false);
-    }
+    if (closestBtn) setActive(closestBtn);
+  }
 
-    scrollEndTimeout = setTimeout(() => {
-      isUserScrolling = false;
-    }, 120);
-  });
-
-
-  function setActive(btn, shouldCenter = true) {
+  function setActive(btn) {
     buttons.forEach(b => b.classList.remove("is-active"));
     btn.classList.add("is-active");
 
     const value = Number(btn.dataset.value);
-    selectSingle(key + "_score", value);
+    answers[key + "_score"] = value;
+    saveAnswers();
 
-    nextBtn.disabled = false;
     updateQuickButtons(value);
-    if (shouldCenter && !isUserScrolling) {
-      centerButton(btn);
-    }
+    nextBtn.disabled = false;
   }
 
   function centerButton(btn) {
-    if (!isScrollable(scroll)) return;
-
     const scrollCenter =
       btn.offsetLeft -
       scroll.offsetWidth / 2 +
       btn.offsetWidth / 2;
 
-    isProgrammaticScroll = true;
-
     scroll.scrollTo({
       left: scrollCenter,
       behavior: "smooth"
     });
-
-    setTimeout(() => {
-      isProgrammaticScroll = false;
-    }, 250);
   }
 
   function isScrollable(el) {
     return el.scrollWidth > el.clientWidth;
   }
 }
-
-
 
 
 function renderYesNo(key) {
