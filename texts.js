@@ -140,6 +140,8 @@ const TEXTS = {
           "Ja vēlaties, varat dalīties ar savu pieredzi vai ieteikumiem",
         placeholder: "Jūsu komentārs (pēc izvēles)"
       }
+
+      
     }
   }
 };

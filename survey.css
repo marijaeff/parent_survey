@@ -603,6 +603,34 @@ p {
 }
 
 /* ===============================
+   THANK YOU SCREEN
+=============================== */
+
+.thankyou {
+  text-align: center;
+}
+
+.thankyou-logo {
+  display: block;
+  margin: 0 auto 1.5rem;
+  max-width: 160px;
+  width: 100%;
+  height: auto;
+}
+
+.thankyou h1 {
+  margin-bottom: 1rem;
+}
+
+.thankyou p {
+  font-size: 15px;
+  line-height: 1.5;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+
+/* ===============================
    Mobile
 =============================== */
 

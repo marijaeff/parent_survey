@@ -330,6 +330,35 @@ function renderOtherInput(key, placeholder) {
   answersEl.appendChild(input);
 }
 
+function renderThankYou() {
+  titleEl.textContent = "",
+  answersEl.innerHTML = "";
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "thankyou";
+
+  const logo = document.createElement("img");
+  logo.src = "icon/logo.png";
+  logo.alt = "Logo";
+  logo.className = "thankyou-logo";
+
+  const title = document.createElement("h1");
+  title.textContent = texts.common.thank_you_title;
+
+  const text = document.createElement("p");
+  text.textContent = texts.common.thank_you_text;
+
+  wrapper.appendChild(logo);
+  wrapper.appendChild(title);
+  wrapper.appendChild(text);
+
+  answersEl.appendChild(wrapper);
+
+  document.querySelector(".actions").style.display = "none";
+}
+
+
+
 
 function saveAnswers() {
   sessionStorage.setItem("answers", JSON.stringify(answers));
@@ -366,5 +395,6 @@ function shouldShowQuestion(key) {
 
 function finishSurvey() {
   console.log("DONE", answers);
+  renderThankYou();
   // šeit būs nosūtīšana uz serveri un/vai pabeigšanas ekrāns
 }
