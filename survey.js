@@ -256,14 +256,17 @@ function renderScale(key, q) {
         isUserScrolling = false;
         isProgrammaticScroll = true;
 
-        setActive(targetBtn, false);
+        scroll.classList.add("no-anim");
 
+        setActive(targetBtn, false);
         centerButton(targetBtn);
 
         setTimeout(() => {
+          scroll.classList.remove("no-anim");
           isProgrammaticScroll = false;
         }, 300);
       });
+
 
 
       quickButtons.push({ btn: qb, value: opt.value });

@@ -785,6 +785,10 @@ p {
     padding: 0.6rem 0.35rem;
   }
 
+  .scale-scroll.no-anim .scale-btn {
+    transition: none !important;
+  }
+
 
   .card {
     width: 100%;
