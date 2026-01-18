@@ -145,6 +145,8 @@ function renderOptions(key, q) {
 
 
 function renderScale(key, q) {
+  let isUserScrolling = false;
+  let scrollEndTimeout = null;
   const wrapper = document.createElement("div");
   wrapper.className = "scale-wrapper";
 
@@ -176,8 +178,7 @@ function renderScale(key, q) {
     btn.dataset.value = i;
 
     btn.addEventListener("click", () => {
-      centerButton(btn);
-      setActive(btn);
+      setActive(btn, true);
     });
 
     buttons.push(btn);
@@ -206,12 +207,11 @@ function renderScale(key, q) {
   // === SCROLL LISTENER (mobile only) ===
   let scrollTimeout = null;
   scroll.addEventListener("scroll", () => {
-  if (isInitializing) return;
-  if (!isScrollable(scroll)) return;
+    if (!isScrollable(scroll)) return;
 
-  clearTimeout(scrollTimeout);
+    isUserScrolling = true;
+    clearTimeout(scrollEndTimeout);
 
-  scrollTimeout = setTimeout(() => {
     const paddingLeft = parseFloat(getComputedStyle(scroll).paddingLeft);
     const paddingRight = parseFloat(getComputedStyle(scroll).paddingRight);
 
@@ -236,19 +236,26 @@ function renderScale(key, q) {
     });
 
     if (closestBtn) {
-      setActive(closestBtn);
+      setActive(closestBtn, false);
     }
-  }, 80); 
-});
+
+    scrollEndTimeout = setTimeout(() => {
+      isUserScrolling = false;
+    }, 120);
+  });
 
 
-  function setActive(btn) {
+  function setActive(btn, shouldCenter = true) {
     buttons.forEach(b => b.classList.remove("is-active"));
     btn.classList.add("is-active");
 
     const value = Number(btn.dataset.value);
     selectSingle(key + "_score", value);
     nextBtn.disabled = false;
+
+    if (shouldCenter && !isUserScrolling) {
+      centerButton(btn);
+    }
   }
 
   function centerButton(btn) {
@@ -332,7 +339,7 @@ function renderOtherInput(key, placeholder) {
 
 function renderThankYou() {
   titleEl.textContent = "",
-  answersEl.innerHTML = "";
+    answersEl.innerHTML = "";
 
   const wrapper = document.createElement("div");
   wrapper.className = "thankyou";
