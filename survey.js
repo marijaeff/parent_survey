@@ -144,8 +144,6 @@ function renderOptions(key, q) {
 }
 
 
-
-
 function renderScale(key, q) {
   const wrapper = document.createElement("div");
   wrapper.className = "scale-wrapper";
@@ -165,26 +163,106 @@ function renderScale(key, q) {
   const scroll = document.createElement("div");
   scroll.className = "scale-scroll";
 
+  const buttons = [];
+
+  const spacerLeft = document.createElement("div");
+  spacerLeft.className = "scale-spacer";
+  scroll.appendChild(spacerLeft);
+
   for (let i = 1; i <= 10; i++) {
     const btn = document.createElement("button");
     btn.className = "scale-btn";
     btn.textContent = i;
+    btn.dataset.value = i;
 
     btn.addEventListener("click", () => {
-      selectSingle(key + "_score", i);
-      scroll.querySelectorAll(".scale-btn")
-        .forEach(b => b.classList.remove("selected"));
-      btn.classList.add("selected");
-      nextBtn.disabled = false;
+      centerButton(btn);
+      setActive(btn);
     });
 
+    buttons.push(btn);
     scroll.appendChild(btn);
   }
+
+  const spacerRight = document.createElement("div");
+  spacerRight.className = "scale-spacer";
+  scroll.appendChild(spacerRight);
+
 
   wrapper.appendChild(labels);
   wrapper.appendChild(scroll);
   answersEl.appendChild(wrapper);
+
+  // === INITIAL STATE ===
+  const saved = answers[key + "_score"];
+  const startValue = saved || 5;
+  const startBtn = buttons[startValue - 1];
+
+  requestAnimationFrame(() => {
+    centerButton(startBtn);
+    setActive(startBtn);
+  });
+
+  // === SCROLL LISTENER (mobile only) ===
+  scroll.addEventListener("scroll", () => {
+    if (!isScrollable(scroll)) return;
+
+    const paddingLeft = parseFloat(getComputedStyle(scroll).paddingLeft);
+    const paddingRight = parseFloat(getComputedStyle(scroll).paddingRight);
+
+    const visibleWidth =
+      scroll.clientWidth - paddingLeft - paddingRight;
+
+    const centerX =
+      scroll.scrollLeft + paddingLeft + visibleWidth / 2;
+
+    let closestBtn = null;
+    let closestDist = Infinity;
+
+    buttons.forEach(btn => {
+      const btnCenter =
+        btn.offsetLeft + btn.offsetWidth / 2;
+      const dist = Math.abs(centerX - btnCenter);
+
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestBtn = btn;
+      }
+    });
+
+    if (closestBtn) {
+      setActive(closestBtn);
+    }
+  });
+
+  function setActive(btn) {
+    buttons.forEach(b => b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+
+    const value = Number(btn.dataset.value);
+    selectSingle(key + "_score", value);
+    nextBtn.disabled = false;
+  }
+
+  function centerButton(btn) {
+    if (!isScrollable(scroll)) return;
+
+    const scrollCenter =
+      btn.offsetLeft -
+      scroll.offsetWidth / 2 +
+      btn.offsetWidth / 2;
+
+    scroll.scrollTo({
+      left: scrollCenter,
+      behavior: "smooth"
+    });
+  }
+
+  function isScrollable(el) {
+    return el.scrollWidth > el.clientWidth;
+  }
 }
+
 
 
 
@@ -281,5 +359,5 @@ function shouldShowQuestion(key) {
 
 function finishSurvey() {
   console.log("DONE", answers);
-// šeit būs nosūtīšana uz serveri un/vai pabeigšanas ekrāns
+  // šeit būs nosūtīšana uz serveri un/vai pabeigšanas ekrāns
 }
