@@ -5,6 +5,7 @@
 const language = sessionStorage.getItem("language") || "lv";
 const texts = TEXTS[language];
 const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
+let currentKey = null;
 
 let currentIndex = 0;
 
@@ -51,6 +52,7 @@ nextBtn.addEventListener("click", () => {
 });
 
 skipBtn.addEventListener("click", () => {
+  markSkipped(currentKey);
   goNext(true);
 });
 
@@ -65,6 +67,8 @@ function renderCurrentQuestion() {
   }
 
   let key = QUESTION_ORDER[currentIndex];
+
+  currentKey = key;
 
   while (key && !shouldShowQuestion(key)) {
     currentIndex++;
@@ -96,6 +100,24 @@ function renderCurrentQuestion() {
     renderTextarea(key, q);
     nextBtn.disabled = false;
   }
+}
+
+function markSkipped(key) {
+  if (!key) return;
+
+  answers[key] = "skipped";
+
+  answers[key + "_score"] = "skipped";
+
+  if (key === "processes") {
+    Object.keys(answers).forEach(k => {
+      if (k.startsWith("process_")) {
+        answers[k] = "skipped";
+      }
+    });
+  }
+
+  saveAnswers();
 }
 
 
