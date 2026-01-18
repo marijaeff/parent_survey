@@ -204,9 +204,14 @@ function renderScale(key, q) {
   });
 
   // === SCROLL LISTENER (mobile only) ===
+  let scrollTimeout = null;
   scroll.addEventListener("scroll", () => {
-    if (!isScrollable(scroll)) return;
+  if (isInitializing) return;
+  if (!isScrollable(scroll)) return;
 
+  clearTimeout(scrollTimeout);
+
+  scrollTimeout = setTimeout(() => {
     const paddingLeft = parseFloat(getComputedStyle(scroll).paddingLeft);
     const paddingRight = parseFloat(getComputedStyle(scroll).paddingRight);
 
@@ -233,7 +238,9 @@ function renderScale(key, q) {
     if (closestBtn) {
       setActive(closestBtn);
     }
-  });
+  }, 80); 
+});
+
 
   function setActive(btn) {
     buttons.forEach(b => b.classList.remove("is-active"));
