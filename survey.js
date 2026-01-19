@@ -248,7 +248,8 @@ function renderScale(key, q) {
       const qb = document.createElement("button");
       qb.className = "scale-quick-btn";
       qb.textContent = opt.label;
-
+      qb.dataset.value = opt.value;
+      
       qb.addEventListener("click", () => {
         const targetBtn = buttons[opt.value - 1];
         isProgrammaticScroll = true;
