@@ -102,7 +102,6 @@ function renderCurrentQuestion() {
     nextBtn.disabled = false;
   }
 }
-
 function markSkipped(key) {
   if (!key) return;
 
@@ -189,7 +188,6 @@ function renderOptions(key, q) {
   });
 }
 
-
 function renderScale(key, q) {
   let updateQuickButtons = () => { };
   let isProgrammaticScroll = false;
@@ -249,12 +247,21 @@ function renderScale(key, q) {
       qb.className = "scale-quick-btn";
       qb.textContent = opt.label;
       qb.dataset.value = opt.value;
-      
+
       qb.addEventListener("click", () => {
         const targetBtn = buttons[opt.value - 1];
+
+        setActive(targetBtn);
+
         isProgrammaticScroll = true;
+
         centerButton(targetBtn);
+
+        setTimeout(() => {
+          isProgrammaticScroll = false;
+        }, 300);
       });
+
 
       quickButtons.push({ btn: qb, value: opt.value });
       quickWrap.appendChild(qb);
@@ -310,14 +317,10 @@ function renderScale(key, q) {
 
   // === SCROLL HANDLING ===
   scroll.addEventListener("scroll", () => {
+    if (isProgrammaticScroll) return; 
     if (!isScrollable(scroll)) return;
 
-    clearTimeout(programmaticEndTimer);
-
-    programmaticEndTimer = setTimeout(() => {
-      isProgrammaticScroll = false;
-      pickClosest();
-    }, 140);
+    pickClosest();
   });
 
   function pickClosest() {
@@ -374,7 +377,6 @@ function renderScale(key, q) {
   }
 }
 
-
 function renderYesNo(key) {
   ["yes", "no"].forEach(val => {
     const btn = document.createElement("button");
@@ -413,7 +415,6 @@ function selectSingle(key, value) {
   saveAnswers();
 }
 
-
 function renderOtherInput(key, placeholder, isMulti = false) {
   const existing = answersEl.querySelector(".other-input");
   if (existing) return;
@@ -441,7 +442,6 @@ function renderOtherInput(key, placeholder, isMulti = false) {
   answersEl.appendChild(input);
 }
 
-
 function renderThankYou() {
   titleEl.textContent = "",
     answersEl.innerHTML = "";
@@ -468,9 +468,6 @@ function renderThankYou() {
 
   document.querySelector(".actions").style.display = "none";
 }
-
-
-
 
 function saveAnswers() {
   sessionStorage.setItem("answers", JSON.stringify(answers));
@@ -515,9 +512,6 @@ function goNext(isSkip = false) {
     });
   }, 220);
 }
-
-
-
 
 /* =========================
    CONDITIONAL LOGIC
