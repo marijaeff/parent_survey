@@ -191,6 +191,7 @@ function renderOptions(key, q) {
 function renderScale(key, q) {
   let updateQuickButtons = () => { };
   let isProgrammaticScroll = false;
+  let allowScrollSelection = true;
   let programmaticEndTimer = null;
 
   const wrapper = document.createElement("div");
@@ -253,13 +254,15 @@ function renderScale(key, q) {
 
         setActive(targetBtn);
 
+        allowScrollSelection = false;
         isProgrammaticScroll = true;
 
         centerButton(targetBtn);
 
         setTimeout(() => {
           isProgrammaticScroll = false;
-        }, 300);
+          allowScrollSelection = true;
+        }, 500);
       });
 
 
@@ -317,11 +320,12 @@ function renderScale(key, q) {
 
   // === SCROLL HANDLING ===
   scroll.addEventListener("scroll", () => {
-    if (isProgrammaticScroll) return; 
+    if (!allowScrollSelection) return;
     if (!isScrollable(scroll)) return;
 
     pickClosest();
   });
+
 
   function pickClosest() {
     const paddingLeft = parseFloat(getComputedStyle(scroll).paddingLeft);
