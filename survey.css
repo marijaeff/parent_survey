@@ -157,6 +157,21 @@ p {
    Scale 1–10 — Wheel wrapper
 =============================== */
 
+
+.scale-arrows {
+  display: none;
+}
+
+.scale-quick.is-disabled .scale-quick-btn {
+  pointer-events: none;
+  opacity: 0.4;
+}
+
+.scale-scroll.is-locked .scale-btn:not(.is-active) {
+  pointer-events: none;
+  opacity: 0.25;
+}
+
 .scale-wrapper {
   margin-top: 2rem;
   display: flex;
@@ -831,6 +846,34 @@ p {
   .scale-scroll::after {
     display: none;
   }
+}
+
+/* ===============================
+   Progress steps (parent)
+=============================== */
+
+.progress-steps {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 1.2rem;
+}
+
+.progress-step {
+  width: 18px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.12);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.progress-step.active {
+  background: #e0a716;
+  transform: scaleX(1.3);
+}
+
+.progress-step.completed {
+  background: rgba(224, 167, 22, 0.5);
 }
 
 

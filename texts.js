@@ -18,7 +18,7 @@ const TEXTS = {
       thank_you_title: "Paldies!",
       thank_you_text:
         "Jūsu atbildes ir saņemtas. Tās palīdz mums veidot drošāku un atbalstošāku vidi bērniem un ģimenēm.",
-      scale_hint: "Ja vēlaties, varat precizēt atbildi, pavelkot skalu",
+      scale_hint: "Ja vēlaties, varat precizēt atbildi, izmantojot skalu",
       scale_arrows: "← pavelciet →",
       sending: "Nosūtam…",
       coming_soon: "Drīzumā"
@@ -44,7 +44,7 @@ const TEXTS = {
 
       age_group: {
         text: "Kāds ir bērna vecums?",
-        type: "single",
+        type: "multi",
         options: {
           "4-7": "4–7 gadi",
           "8-12": "8–12 gadi",
@@ -184,8 +184,18 @@ const TEXTS = {
           { label: "Vidēji saudzīga", value: 5 },
           { label: "Drīzāk saudzīga", value: 8 },
           { label: "Ļoti saudzīga", value: 10 }
-        ]
+        ],
+      },
 
+      trust_in_institutions: {
+        text: "Vai pieredze Bērna mājā ir stiprinājusi Jūsu uzticēšanos valsts iestādēm?",
+        type: "single",
+        options: {
+          yes: "Jā",
+          no: "Nē",
+          unchanged: "Nekas nav mainījies"
+        },
+        placeholder: "Ja vēlaties, varat pievienot komentāru"
       },
 
       general_comment: {
@@ -217,7 +227,7 @@ const TEXTS = {
       thank_you_title: "Спасибо!",
       thank_you_text:
         "Ваши ответы получены. Они помогают нам создавать более безопасную и поддерживающую среду для детей и семей.",
-      scale_hint: "При желании вы можете уточнить ответ, передвигая шкалу",
+      scale_hint: "При желании вы можете уточнить ответ, используя шкалу",
       scale_arrows: "← проведите →",
       sending: "Отправляем…",
       coming_soon: "Вскоре",
@@ -243,7 +253,7 @@ const TEXTS = {
 
       age_group: {
         text: "Каков возраст ребёнка?",
-        type: "single",
+        type: "multi",
         options: {
           "4-7": "4–7 лет",
           "8-12": "8–12 лет",
@@ -387,6 +397,17 @@ const TEXTS = {
 
       },
 
+      trust_in_institutions: {
+        text: "Укрепил ли опыт обращения в Bērna māja Ваше доверие к государственным учреждениям?",
+        type: "single",
+        options: {
+          yes: "Да",
+          no: "Нет",
+          unchanged: "Ничего не изменилось"
+        },
+        placeholder: "При желании Вы можете добавить комментарий"
+      },
+
       general_comment: {
         text:
           "При желании Вы можете поделиться своим опытом или рекомендациями",
@@ -415,7 +436,7 @@ const TEXTS = {
       thank_you_title: "Thank you!",
       thank_you_text:
         "Your responses have been received. They help us create a safer and more supportive environment for children and families.",
-      scale_hint: "If you wish, you can refine your answer by adjusting the scale",
+      scale_hint: "If you wish, you may refine your answer using the scale",
       scale_arrows: "← drag →",
       sending: "Sending…",
       coming_soon: "Soon"
@@ -441,7 +462,7 @@ const TEXTS = {
 
       age_group: {
         text: "What is the child’s age?",
-        type: "single",
+        type: "multi",
         options: {
           "4-7": "4–7 years",
           "8-12": "8–12 years",
@@ -584,6 +605,18 @@ const TEXTS = {
         ]
 
       },
+
+      trust_in_institutions: {
+        text: "Has your experience at Bērna māja strengthened your trust in public institutions?",
+        type: "single",
+        options: {
+          yes: "Yes",
+          no: "No",
+          unchanged: "Nothing has changed"
+        },
+        placeholder: "If you wish, you may add a comment"
+      },
+
 
       general_comment: {
         text:

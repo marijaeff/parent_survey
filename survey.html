@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="lv">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,21 +11,22 @@
 
 <body class="is-page-entering">
 
-   <div class="app parent-mode">
+  <div class="app parent-mode">
+    <div class="progress-steps" id="progressSteps"></div>
+    <div class="card wide-card">
+      <h1 id="questionTitle"></h1>
+      <div class="answers" id="answers"></div>
+    </div>
 
-  <div class="card wide-card">
-    <h1 id="questionTitle"></h1>
-    <div class="answers" id="answers"></div>
+    <div class="actions">
+      <button id="nextBtn" class="primary-btn" disabled></button>
+      <button id="skipBtn" class="skip-btn"></button>
+    </div>
+
   </div>
-
-  <div class="actions">
-    <button id="nextBtn" class="primary-btn" disabled></button>
-    <button id="skipBtn" class="skip-btn"></button>
-  </div>
-
-</div>
 
   <script src="texts.js"></script>
   <script src="survey.js"></script>
 </body>
+
 </html>

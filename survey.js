@@ -3,12 +3,21 @@
 ========================= */
 
 const language = sessionStorage.getItem("language") || "lv";
+
+const branch = sessionStorage.getItem("branch");
+
+if (!branch) {
+  window.location.href = "index.html";
+}
+
 document.documentElement.lang = language;
 const texts = TEXTS[language];
 const answers = JSON.parse(sessionStorage.getItem("answers") || "{}");
 let currentKey = null;
 
 let currentIndex = 0;
+
+
 
 /* =========================
    ORDER OF QUESTIONS
@@ -24,6 +33,7 @@ const QUESTION_ORDER = [
   "felt_safe",
   "understood_process",
   "staff_attitude",
+  "trust_in_institutions",
   "participated_in_interview", // nosacīti
   "interview_safeness",        // nosacīti
   "general_comment"
@@ -37,6 +47,8 @@ const titleEl = document.getElementById("questionTitle");
 const answersEl = document.getElementById("answers");
 const nextBtn = document.getElementById("nextBtn");
 const skipBtn = document.getElementById("skipBtn");
+const progressStepsWrap = document.getElementById("progressSteps");
+
 
 nextBtn.textContent = texts.common.next;
 skipBtn.textContent = texts.common.skip;
@@ -45,6 +57,7 @@ skipBtn.textContent = texts.common.skip;
    RENDER FLOW
 ========================= */
 
+initProgressSteps();
 renderCurrentQuestion();
 
 nextBtn.addEventListener("click", () => {
@@ -61,7 +74,89 @@ skipBtn.addEventListener("click", () => {
    CORE FUNCTIONS
 ========================= */
 
+function getHiddenStepsCount() {
+  let hidden = 0;
+
+  if (
+    answers.relation_to_child === "orphan_court" ||
+    answers.relation_to_child === "institution_worker"
+  ) {
+    hidden += 1;
+  }
+
+  if (answers.process_investigative_interview !== true) {
+    hidden += 2;
+    return hidden;
+  }
+
+  if (answers.participated_in_interview === false) {
+    hidden += 1;
+  }
+
+  return hidden;
+}
+
+
+
+function initProgressSteps() {
+  if (!progressStepsWrap) return;
+
+  progressStepsWrap.innerHTML = "";
+
+  const hiddenSteps = getHiddenStepsCount();
+  const totalSteps = QUESTION_ORDER.length - hiddenSteps;
+
+  for (let i = 0; i < totalSteps; i++) {
+    const step = document.createElement("div");
+    step.className = "progress-step";
+    progressStepsWrap.appendChild(step);
+  }
+}
+
+function getVisibleStepIndex() {
+  let index = 0;
+
+  for (let i = 0; i < currentIndex; i++) {
+    const key = QUESTION_ORDER[i];
+    if (shouldShowQuestion(key)) {
+      index++;
+    }
+  }
+
+  return index;
+}
+
+
+function updateProgressSteps() {
+  if (!progressStepsWrap) return;
+
+  const steps = progressStepsWrap.children;
+  const activeIndex = getVisibleStepIndex();
+
+  Array.from(steps).forEach((step, index) => {
+    step.classList.remove("active", "completed");
+
+    if (index < activeIndex) {
+      step.classList.add("completed");
+    } else if (index === activeIndex) {
+      step.classList.add("active");
+    }
+  });
+}
+
+
 function renderCurrentQuestion() {
+
+  if (currentKey === "processes" || currentKey === "participated_in_interview") {
+    initProgressSteps();
+
+    requestAnimationFrame(() => {
+      updateProgressSteps();
+    });
+  } else {
+    updateProgressSteps();
+  }
+
   if (currentIndex >= QUESTION_ORDER.length) {
     finishSurvey();
     return;
@@ -93,15 +188,25 @@ function renderCurrentQuestion() {
 
   if (q.options) {
     renderOptions(key, q);
+
+    if (key === "trust_in_institutions") {
+      renderTextarea(key + "_comment", q);
+      nextBtn.disabled = false;
+    }
+
   } else if (q.scale) {
     renderScale(key, q);
+
   } else if (key === "participated_in_interview") {
     renderYesNo(key);
+
   } else if (key === "general_comment") {
     renderTextarea(key, q);
     nextBtn.disabled = false;
   }
+
 }
+
 function markSkipped(key) {
   if (!key) return;
 
@@ -140,11 +245,27 @@ function renderOptions(key, q) {
       if (isMulti) {
         const isSelected = btn.classList.toggle("selected");
 
-        if (value !== "other") {
-          const fieldKey = `process_${value}`;
-          answers[fieldKey] = isSelected;
+
+        if (key === "processes") {
+          if (value !== "other") {
+            const fieldKey = `process_${value}`;
+            answers[fieldKey] = isSelected;
+          }
         }
 
+        else {
+          if (!Array.isArray(answers[key])) {
+            answers[key] = [];
+          }
+
+          if (isSelected) {
+            if (!answers[key].includes(value)) {
+              answers[key].push(value);
+            }
+          } else {
+            answers[key] = answers[key].filter(v => v !== value);
+          }
+        }
 
         if (value === "other" && q.other_placeholder) {
           const existingInput = answersEl.querySelector(".other-input");
@@ -225,7 +346,7 @@ function renderScale(key, q) {
     btn.dataset.value = i;
 
     btn.addEventListener("click", () => {
-      setActive(btn);
+      setActive(btn, "scale", true);
     });
 
     buttons.push(btn);
@@ -251,8 +372,7 @@ function renderScale(key, q) {
 
       qb.addEventListener("click", () => {
         const targetBtn = buttons[opt.value - 1];
-
-        setActive(targetBtn);
+        setActive(targetBtn, "quick", true);
 
         allowScrollSelection = false;
         isProgrammaticScroll = true;
@@ -315,7 +435,7 @@ function renderScale(key, q) {
 
   requestAnimationFrame(() => {
     centerButton(startBtn);
-    setActive(startBtn);
+    setActive(startBtn, "scale", false);
   });
 
   // === SCROLL HANDLING ===
@@ -325,7 +445,6 @@ function renderScale(key, q) {
 
     pickClosest();
   });
-
 
   function pickClosest() {
     const paddingLeft = parseFloat(getComputedStyle(scroll).paddingLeft);
@@ -352,7 +471,7 @@ function renderScale(key, q) {
     if (closestBtn) setActive(closestBtn);
   }
 
-  function setActive(btn) {
+  function setActive(btn, source = "scale", isUserAction = true) {
     buttons.forEach(b => b.classList.remove("is-active"));
     btn.classList.add("is-active");
 
@@ -361,8 +480,17 @@ function renderScale(key, q) {
     saveAnswers();
 
     updateQuickButtons(value);
-    nextBtn.disabled = false;
+
+    if (source === "scale") {
+      const quickButtons = wrapper.querySelectorAll(".scale-quick-btn");
+      quickButtons.forEach(qb => qb.classList.remove("is-active"));
+    }
+
+    if (isUserAction) {
+      nextBtn.disabled = false;
+    }
   }
+
 
   function centerButton(btn) {
     const scrollCenter =
@@ -388,14 +516,21 @@ function renderYesNo(key) {
     btn.textContent = texts.common[val];
 
     btn.addEventListener("click", () => {
-      selectSingle(key, val === "yes");
+      answersEl
+        .querySelectorAll(".answer-btn")
+        .forEach(b => b.classList.remove("selected"));
+
       btn.classList.add("selected");
+
+      selectSingle(key, val === "yes");
+
       nextBtn.disabled = false;
     });
 
     answersEl.appendChild(btn);
   });
 }
+
 
 function renderTextarea(key, q) {
   const textarea = document.createElement("textarea");
@@ -449,6 +584,10 @@ function renderOtherInput(key, placeholder, isMulti = false) {
 function renderThankYou() {
   titleEl.textContent = "",
     answersEl.innerHTML = "";
+
+  if (progressStepsWrap) {
+    progressStepsWrap.style.display = "none";
+  }
 
   const wrapper = document.createElement("div");
   wrapper.className = "thankyou";
@@ -530,6 +669,13 @@ function shouldShowQuestion(key) {
     return answers.participated_in_interview === true;
   }
 
+  if (key === "trust_in_institutions") {
+    return (
+      answers.relation_to_child !== "orphan_court" &&
+      answers.relation_to_child !== "institution_worker"
+    );
+  }
+
   return true;
 }
 
@@ -548,7 +694,7 @@ function finishSurvey() {
     form_type: "parent"
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbxlRSb_qLXVmyyJP61DcTMVK6OqA4jppjsi0YrRpL2hCc3AgjiK2ZfZ8T2OdPFZMzOu/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbwqpWg3GaGzWquKvjxPWaIDvkkrPiYvBo3fYGJq0VQ2mBywMc8Z0pDJJTbEFAUpWkt2/exec", {
     method: "POST",
     mode: "no-cors",
     body: JSON.stringify(payload)
