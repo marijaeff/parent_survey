@@ -846,6 +846,10 @@ p {
   .scale-scroll::after {
     display: none;
   }
+
+  .scale-arrows {
+    display: block;
+  }
 }
 
 /* ===============================

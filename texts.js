@@ -12,7 +12,7 @@ const TEXTS = {
 
     common: {
       next: "Tālāk",
-      skip: "Izlaist",
+      skip: "Izlaist jautājumu",
       yes: "Jā",
       no: "Nē",
       thank_you_title: "Paldies!",
@@ -221,7 +221,7 @@ const TEXTS = {
 
     common: {
       next: "Далее",
-      skip: "Пропустить",
+      skip: "Пропустить вопрос",
       yes: "Да",
       no: "Нет",
       thank_you_title: "Спасибо!",
@@ -430,7 +430,7 @@ const TEXTS = {
 
     common: {
       next: "Next",
-      skip: "Skip",
+      skip: "Skip question",
       yes: "Yes",
       no: "No",
       thank_you_title: "Thank you!",

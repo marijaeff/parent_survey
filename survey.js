@@ -468,7 +468,16 @@ function renderScale(key, q) {
       }
     });
 
-    if (closestBtn) setActive(closestBtn);
+    if (closestBtn) {
+      const value = Number(closestBtn.dataset.value);
+      const isSameValue = answers[key + "_score"] === value;
+
+      setActive(
+        closestBtn,
+        "scale",
+        !isProgrammaticScroll && !isSameValue
+      );
+    }
   }
 
   function setActive(btn, source = "scale", isUserAction = true) {
